@@ -7,7 +7,6 @@ class root extends StatefulWidget{
   root({this.auth});
 
   final baseAuthen auth;
-
   @override
   State<StatefulWidget> createState() => new _rootState();
 }
@@ -19,8 +18,8 @@ enum authStat{
 }
 
 class _rootState extends State<root> {
-  authStat authState = authStat.invalid;
-  String _id = "";
+  static authStat authState = authStat.invalid;
+  static String _id = "";
 
   @override
   void initState() {
@@ -36,16 +35,44 @@ class _rootState extends State<root> {
     });
   }
 
-  void _loggedIn(){
+  void loggedIn(){
     widget.auth.getCurrUser().then((user) {
       setState(() {
         _id = user.uid.toString();
-      });
+        authState = authStat.logged_in;
     });
+  });
+  }
+
+  void loggedOut() {
     setState(() {
       authState = authStat.logged_out;
       _id = "";
     });
   }
 
+  @override
+  Widget build(BuildContext context){
+    switch(authState){
+      case authStat.invalid:
+        break;
+      case authStat.logged_out:
+        return new LoginSignUp(
+          auth: widget.auth,
+          loggedIn: loggedIn,
+        );
+        break;
+      case authStat.logged_in:
+        if(_id.length > 0 && _id != null){
+          return new home(
+            id: _id,
+            auth: widget.auth,
+            onsignOut: loggedOut,
+          );
+        }
+        break;
+      default:
+        break;
+    }
+  }
 }

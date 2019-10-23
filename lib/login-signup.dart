@@ -5,8 +5,9 @@ import 'package:login_page/auth.dart';
 
 class LoginSignUp extends StatefulWidget {
 
-  LoginSignUp({this.auth});
+  LoginSignUp({this.auth, this.loggedIn});
   final baseAuthen auth;
+  final VoidCallback loggedIn;
   @override
   State<StatefulWidget> createState() => new _LoginSignUpState();
 }
@@ -20,14 +21,8 @@ String _password;
 
 class _LoginSignUpState extends State<LoginSignUp> {
   Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return new Scaffold(
       appBar: new AppBar(
         centerTitle: true,
@@ -209,7 +204,7 @@ class _LoginSignUpState extends State<LoginSignUp> {
     }
     return false;
   }
-  _validateSubmit() async{
+  void _validateSubmit() async{
     setState(() {
       _errorMsg="";
 
@@ -223,7 +218,8 @@ class _LoginSignUpState extends State<LoginSignUp> {
         else{
           id = await widget.auth.signUp(_email, _password);
         }
-        if(id.length!=null){
+        if(id != null && id.length > 0){
+          widget.loggedIn();
         }
       }catch(e)
       {
