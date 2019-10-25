@@ -19,8 +19,7 @@ class _homeState extends State<home> {
 
   Future<void> signoutacc(BuildContext context) async{
     try{
-      final baseAuthen auth = AuthProvider.of(context).auth;
-      auth.signOut();
+      await widget.auth.signOut();
       widget.onsignOut();
     }
     catch(e){

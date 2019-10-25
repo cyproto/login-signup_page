@@ -18,11 +18,15 @@ var _form = form.login;
 String _errorMsg;
 String _email;
 String _password;
+bool loading;
 
 class _LoginSignUpState extends State<LoginSignUp> {
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
     return new Scaffold(
       appBar: new AppBar(
         centerTitle: true,
@@ -31,10 +35,15 @@ class _LoginSignUpState extends State<LoginSignUp> {
       body: Stack(
         children: <Widget>[
           _body(height, width),
-          //_showProgress(),
+          _showCirLoading(),
         ],
       ),
     );
+  }
+  void dispose(){
+    emailController.dispose();
+    passController.dispose();
+    super.dispose();
   }
   Widget _body(double height, double width) {
     return new Container(
@@ -92,6 +101,7 @@ class _LoginSignUpState extends State<LoginSignUp> {
         ),
         validator: (value) => value.isEmpty ? "Email can\'t be empty." : null,
         onSaved: (value) => _email = value.trim(),
+        controller: emailController,
       ),
     );
   }
@@ -121,6 +131,7 @@ class _LoginSignUpState extends State<LoginSignUp> {
         ),
         validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
         onSaved: (value) => _password = value.trim(),
+        controller: passController,
       ),
     );
   }
@@ -162,6 +173,19 @@ class _LoginSignUpState extends State<LoginSignUp> {
     );
   }
 
+  void initState(){
+    loading=false;
+    super.initState();
+  }
+  Widget _showCirLoading(){
+    if(loading){
+      return Center(child: CircularProgressIndicator(),);
+    }
+    return Container(
+      height: 0.0,
+      width: 0.0,
+    );
+  }
   void _changeToLogin(){
     _formKey.currentState.reset();
     _errorMsg = "";
@@ -207,7 +231,9 @@ class _LoginSignUpState extends State<LoginSignUp> {
   void _validateSubmit() async{
     setState(() {
       _errorMsg="";
-
+      if(emailController.text.length>0&&passController.text.length>0){
+        loading = true;
+      }
     });
     if(_validateSave()){
       String id = "";
@@ -218,21 +244,21 @@ class _LoginSignUpState extends State<LoginSignUp> {
         else{
           id = await widget.auth.signUp(_email, _password);
         }
+        setState(() {
+          loading=false;
+        });
+
         if(id != null && id.length > 0){
           widget.loggedIn();
         }
       }catch(e)
       {
         setState(() {
+          loading=false;
           _errorMsg = e.message;
+          _formKey.currentState.reset();
         });
       }
     }
   }
 }
-//Widget _showProgress() {
-
-//if(_isLoading) {
-//  return Center(child: CircularProgressIndicator());
-//} return Container(height: 0.0,width: 0.0,);
-//}

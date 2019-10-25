@@ -47,7 +47,7 @@ class _rootState extends State<root> {
   void loggedOut() {
     setState(() {
       authState = authStat.logged_out;
-      _id = "";
+      _id = null;
     });
   }
 
