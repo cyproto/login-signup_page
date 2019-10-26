@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'auth.dart';
-import 'root.dart';
-import 'authprovider.dart';
 
 class home extends StatefulWidget {
   home({Key key, this.auth, this.id, this.onsignOut})
@@ -38,7 +36,9 @@ class _homeState extends State<home> {
     return Scaffold(
       appBar: new AppBar(
         centerTitle: true,
-        title: new Text("Home Page"),
+        title: new Text("Home Page", style: new TextStyle(color: Colors.black),),
+        backgroundColor: Colors.white,
+        iconTheme: new IconThemeData(color: Colors.black),
       ),
       drawer: Drawer(
         child: ListView(

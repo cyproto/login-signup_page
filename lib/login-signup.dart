@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:async';
 import 'package:login_page/auth.dart';
 
 class LoginSignUp extends StatefulWidget {
@@ -23,6 +21,7 @@ bool loading;
 class _LoginSignUpState extends State<LoginSignUp> {
   final emailController = TextEditingController();
   final passController = TextEditingController();
+  BuildContext scaffoldContext;
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -30,14 +29,20 @@ class _LoginSignUpState extends State<LoginSignUp> {
     return new Scaffold(
       appBar: new AppBar(
         centerTitle: true,
-        title: new Text('Flutter login template', textAlign: TextAlign.center,),
+        title: new Text('Flutter login template', textAlign: TextAlign.center,
+          style: new TextStyle(color: Colors.black),),
+        backgroundColor: Colors.white,
       ),
-      body: Stack(
-        children: <Widget>[
-          _body(height, width),
-          _showCirLoading(),
-        ],
-      ),
+      body: new Builder(builder: (BuildContext context){
+        scaffoldContext = context;
+        return new Stack(
+          children: <Widget>[
+            _body(height, width),
+            _showCirLoading(),
+          ],
+        );
+      })
+
     );
   }
   void dispose(){
@@ -57,7 +62,6 @@ class _LoginSignUpState extends State<LoginSignUp> {
               _passwordField(height, width),
               _loginBut(height, width),
               _toggleSignupAndLogin(height, width),
-              _showErrMsg(),
             ],
           )
       ),
@@ -67,11 +71,11 @@ class _LoginSignUpState extends State<LoginSignUp> {
   Widget _showAvatar(double height, double width) {
     return new Hero(tag: 'hero',
         child: Padding(padding: EdgeInsets.fromLTRB(
-            width * 0.5 - 70, 50, width * 0.5 - 70, 0.0),
+            width * 0.5 - 70, 60, width * 0.5 - 70, 0.0),
           child: CircleAvatar(
             radius: 70,
             backgroundImage: ExactAssetImage('assets/images/avatar.png'),
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.black,
           ),
         )
     );
@@ -92,12 +96,11 @@ class _LoginSignUpState extends State<LoginSignUp> {
             hintText: 'Email',
             border: new OutlineInputBorder(
                 borderRadius: const BorderRadius.all(
-                    const Radius.circular(50.0)
+                  const Radius.circular(15.0),
                 )
             ),
             filled: true,
-            hintStyle: new TextStyle(color: Colors.grey),
-            fillColor: Colors.white54
+            fillColor: Colors.white,
         ),
         validator: (value) => value.isEmpty ? "Email can\'t be empty." : null,
         onSaved: (value) => _email = value.trim(),
@@ -108,7 +111,7 @@ class _LoginSignUpState extends State<LoginSignUp> {
 
   Widget _passwordField(double height, double width) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(width * 0.05, 20, width * 0.05, 20),
+      padding: EdgeInsets.fromLTRB(width * 0.05, 25, width * 0.05, 20),
       child: TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.text,
@@ -122,12 +125,11 @@ class _LoginSignUpState extends State<LoginSignUp> {
           hintText: 'Password',
           border: new OutlineInputBorder(
               borderRadius: const BorderRadius.all(
-                  const Radius.circular(50.0)
-              )
+                  const Radius.circular(15.0),
+              ),
           ),
           filled: true,
-          hintStyle: new TextStyle(color: Colors.grey),
-          fillColor: Colors.white54,
+          fillColor: Colors.white,
         ),
         validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
         onSaved: (value) => _password = value.trim(),
@@ -138,17 +140,16 @@ class _LoginSignUpState extends State<LoginSignUp> {
 
   Widget _loginBut(double height, double width) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(width * 0.25, 20, width * 0.25, 10),
+      padding: EdgeInsets.fromLTRB(width * 0.25, 40, width * 0.25, 10),
       child: ButtonTheme(
         height: 50,
         child: new RaisedButton(
           onPressed: _validateSubmit,
-          textColor: Colors.white54,
-          color: Colors.red,
+          color: Colors.white,
           child: _form == form.login ? new Text('Login',
-              style: new TextStyle(fontSize: 20, color: Colors.white
+              style: new TextStyle(fontSize: 20,
               )) : new Text('Create Account',
-              style: new TextStyle(fontSize: 20, color: Colors.white)),
+              style: new TextStyle(fontSize: 20,)),
           shape: RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(50)),
         ),
@@ -163,9 +164,9 @@ class _LoginSignUpState extends State<LoginSignUp> {
       child: FlatButton(
         child: _form == form.login
           ? new Text('Create account',
-          style: new TextStyle(fontSize: 20, color: Colors.red))
+          style: new TextStyle(fontSize: 20))
           : new Text('Already have an account?',
-          style: new TextStyle(fontSize: 20, color: Colors.red)),
+          style: new TextStyle(fontSize: 20)),
           onPressed: _form == form.login
           ? _changeToSignup
           : _changeToLogin,
@@ -202,20 +203,20 @@ class _LoginSignUpState extends State<LoginSignUp> {
     });
   }
 
-  Widget _showErrMsg(){
-    if(_errorMsg != null) {
-      return new Text(
-      _errorMsg,
-      style: TextStyle(
-        fontSize: 15,
-        color: Colors.red,
-        height: 2,
-      ),
-     );
+  void createSnack(_errMsg){
+    final snack = new SnackBar(content: new Text(_errMsg,
+      style: new TextStyle(color: Colors.black, fontFamily: 'Montserrat'),),
+    action: SnackBarAction(label: 'OK', onPressed: (){}),
+    backgroundColor: Colors.white,);
+    Scaffold.of(scaffoldContext).showSnackBar(snack);
   }
-  else{
-    return new Container(
-      height: 0,
+  _showErrMsg(){
+    if(_errorMsg != null) {
+      createSnack(_errorMsg);
+    }
+    else{
+      return new Container(
+        height: 0,
       );
     }
   }
@@ -256,6 +257,7 @@ class _LoginSignUpState extends State<LoginSignUp> {
         setState(() {
           loading=false;
           _errorMsg = e.message;
+          _showErrMsg();
           _formKey.currentState.reset();
         });
       }

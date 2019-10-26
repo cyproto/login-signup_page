@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'login-signup.dart';
 import 'auth.dart';
 import 'root.dart';
 
@@ -12,7 +11,8 @@ class MyApp extends StatelessWidget{
     return new MaterialApp(
       title: 'Flutter login template',
       theme: new ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.blue,
+        fontFamily: 'Montserrat',
       ),
       home: new root(auth: new authen(),),
     );
